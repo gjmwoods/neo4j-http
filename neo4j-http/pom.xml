@@ -94,7 +94,12 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>eu.michael-simons.neo4j</groupId>
+			<artifactId>junit-jupiter-causal-cluster-testcontainer-extension</artifactId>
+			<version>2022.1.2</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

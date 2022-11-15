@@ -82,7 +82,7 @@ class EndpointIT {
 		var requestEntity = new HttpEntity<>(
 			"""
 			{
-			    "statement": "MATCH n RETURN n"
+			    "statement": "PROFILE MATCH (n) RETURN n"
 			}""", headers);
 
 		var exchange = this.restTemplate
