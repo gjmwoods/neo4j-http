@@ -15,6 +15,7 @@
  */
 package org.neo4j.http.app;
 
+import java.time.Duration;
 import java.util.Optional;
 
 import org.neo4j.driver.Query;
@@ -25,6 +26,7 @@ import org.neo4j.http.db.Neo4jPrincipal;
 import org.neo4j.http.db.ResultContainer;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,19 +57,21 @@ public class Endpoint {
 
 	@JsonView(Views.NEO4J_44_DEFAULT.class)
 	@PostMapping(value = {"/db/{database}/tx/commit", "/db/data/transaction/commit"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	Mono<ResultContainer> run(
-		@AuthenticationPrincipal Neo4jPrincipal authentication,
-		@PathVariable(required = false) Optional<String> database,
-		@RequestBody AnnotatedQuery.Container queries
+	Mono<ResultContainer> runNew(
+			@AuthenticationPrincipal Neo4jPrincipal authentication,
+			@PathVariable(required = false) Optional<String> database,
+			@RequestBody Flux<AnnotatedQuery> queries
 	) {
-		if (queries.value().isEmpty()) {
-			return Mono.just(new ResultContainer());
-		}
-		return neo4j.run(authentication, database.orElse(DEFAULT_DATABASE_NAME), queries.value().get(0), queries.value().stream().skip(1).toArray(AnnotatedQuery[]::new));
+		return neo4j.run(authentication, database.orElse(DEFAULT_DATABASE_NAME), queries);
 	}
 
 	@PostMapping(value = "/db/{database}/tx/commit", produces = MediaType.APPLICATION_NDJSON_VALUE)
 	Flux<Record> stream(@AuthenticationPrincipal Neo4jPrincipal authentication, @PathVariable String database, @RequestBody Query query) {
 		return neo4j.stream(authentication, database, query);
+	}
+
+	@PostMapping(value = "/yo", produces = MediaType.APPLICATION_NDJSON_VALUE)
+	Flux<String> yo(@RequestBody Flux<String> string) {
+		return string.delayElements(Duration.ofSeconds(5));
 	}
 }

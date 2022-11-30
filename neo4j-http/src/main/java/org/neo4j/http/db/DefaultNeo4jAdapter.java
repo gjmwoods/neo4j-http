@@ -15,7 +15,6 @@
  */
 package org.neo4j.http.db;
 
-import java.util.Arrays;
 import java.util.function.Function;
 
 import org.neo4j.driver.AccessMode;
@@ -69,12 +68,7 @@ class DefaultNeo4jAdapter implements Neo4jAdapter {
 	}
 
 	@Override
-	public Mono<ResultContainer> run(Neo4jPrincipal principal, String database, AnnotatedQuery query, AnnotatedQuery... additionalQueries) {
-
-		Flux<AnnotatedQuery> queries = Flux.just(query);
-		if (additionalQueries != null && additionalQueries.length > 0) {
-			queries = queries.concatWith(Flux.fromStream(Arrays.stream(additionalQueries)));
-		}
+	public Mono<ResultContainer> run(Neo4jPrincipal principal, String database, Flux<AnnotatedQuery> queries) {
 
 		record ResultAndSummary(EagerResult result, ResultSummary summary) {
 		}
