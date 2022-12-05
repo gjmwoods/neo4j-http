@@ -142,4 +142,40 @@ class EndpointIT {
 		assertThat(exchange.getBody())
 				.containsEntry("data", "[]");
 	}
+
+	@Test
+	void whyBreak() {
+
+		var headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+		var requestEntity = new HttpEntity<>("{\"statements\": [{\"statement\": \"UNWIND range(1,1,1) AS i RETURN i\"}]}", headers);
+
+		var exchange = this.restTemplate
+				.withBasicAuth("neo4j", neo4j.getAdminPassword())
+				.exchange("/db/neo4j/tx/commit", HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Map<String, String>>() {
+				});
+		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(exchange.getBody())
+				.containsEntry("error", "Neo.ClientError.Statement.SyntaxError");
+
+		var lookupRequest = new HttpEntity<>(
+				"""
+						{
+						  "statements": [
+						    {
+						      "statement": "MATCH (n:ShouldntExist) RETURN n"
+						    }
+						}
+						""", headers);
+
+		var lookupExchange = this.restTemplate
+				.withBasicAuth("neo4j", neo4j.getAdminPassword())
+				.exchange("/db/neo4j8/tx/commit", HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Map<String, String>>() {
+				});
+		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
+		// Node is not found.
+		assertThat(exchange.getBody())
+				.containsEntry("data", "[]");
+	}
 }
