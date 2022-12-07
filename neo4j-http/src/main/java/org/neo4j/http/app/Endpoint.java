@@ -70,4 +70,9 @@ public class Endpoint {
 	Flux<Record> stream(@AuthenticationPrincipal Neo4jPrincipal authentication, @PathVariable String database, @RequestBody Query query) {
 		return neo4j.stream(authentication, database, query);
 	}
+
+	@PostMapping(value = "/db/{database}/tx/commit/streamy", produces = MediaType.APPLICATION_NDJSON_VALUE)
+	Flux<Record> stream(@AuthenticationPrincipal Neo4jPrincipal authentication, @PathVariable String database, @RequestBody Flux<Query> query) {
+		return neo4j.streamBothWays(authentication, database, query);
+	}
 }

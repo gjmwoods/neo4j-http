@@ -41,6 +41,16 @@ public interface Neo4jAdapter {
 	Flux<Record> stream(Neo4jPrincipal principal, String database, Query query);
 
 	/**
+	 * Streams the records of the given query
+	 * @param principal The authenticated principal
+	 * @param database The database in which to execute the query
+	 * @param query A stream of queries to execute
+	 * @return A stream of records
+	 */
+	Flux<Record> streamBothWays(Neo4jPrincipal principal, String database, Flux<Query> query);
+
+
+	/**
 	 * Executes one or more queries and eagerly collects toe results into a {@link ResultContainer}.
 	 * @param principal The authenticated principal
 	 * @param query The query to execute

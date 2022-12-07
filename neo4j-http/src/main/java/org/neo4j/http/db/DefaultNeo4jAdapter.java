@@ -66,6 +66,16 @@ class DefaultNeo4jAdapter implements Neo4jAdapter {
 	}
 
 	@Override
+	public Flux<Record> streamBothWays(Neo4jPrincipal principal, String database, Flux<Query> queries) {
+		return queries.flatMapSequential(theQuery -> Mono.just(theQuery).zipWith(queryEvaluator.getExecutionRequirements(principal, theQuery.text()))
+				.flatMap(q -> Mono.fromDirect(this.execute0(principal, database, q.getT2(), runner -> {
+					var annotatedQuery = q.getT1();
+					var rxResult = runner.run(annotatedQuery);
+					return Mono.fromDirect(rxResult).flatMapMany(ReactiveResult::records);
+				}))));
+	}
+
+	@Override
 	public Mono<ResultContainer> run(Neo4jPrincipal principal, String database, AnnotatedQuery query, AnnotatedQuery... additionalQueries) {
 
 		Flux<AnnotatedQuery> queries = Flux.just(query);
