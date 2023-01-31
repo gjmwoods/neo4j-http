@@ -18,7 +18,11 @@ package org.neo4j.http;
 import org.neo4j.http.config.ApplicationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+
+import static org.neo4j.http.plugin.ProxyEmbeddedServerExtension.displayAllBeans;
 
 /**
  * Main entry point.
@@ -32,6 +36,6 @@ public class Application {
 	 * @param args Command line arguments provided to the application.
 	 */
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		var context = SpringApplication.run(Application.class, args);
 	}
 }

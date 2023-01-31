@@ -27,7 +27,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * @author Michael J. Simons
  */
-@Configuration(proxyBeanMethods = false)
+//@Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 
 	/**
