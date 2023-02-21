@@ -71,7 +71,7 @@ public class Endpoint {
 	}
 
 	@PostMapping(value = "/yo", produces = MediaType.APPLICATION_NDJSON_VALUE)
-	Flux<String> yo(@RequestBody Flux<String> string) {
+	Flux<String> yo(@RequestBody Flux<Query> query) {
 		return string.delayElements(Duration.ofSeconds(5));
 	}
 }
